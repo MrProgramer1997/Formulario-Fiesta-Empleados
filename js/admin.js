@@ -1,141 +1,249 @@
-< !DOCTYPE html >
-  <html lang="es">
-    <head>
-      <meta charset="utf-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <title>Admin – Fin de Año Empleados</title>
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-          <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-            <link rel="stylesheet" href="css/styles.css" />
-          </head>
-          <body>
-            <div class="bg-layer bg-layer-1"></div>
-            <div class="bg-layer bg-layer-2"></div>
-            <div class="bg-stars"></div>
+// js/admin.js
 
-            <main class="page">
-              <!-- Panel info -->
-              <section class="panel panel-left">
-                <div>
-                  <div class="badge">Panel · Administración</div>
-                  <h1 class="title">
-                    Fin de Año<br />
-                    <span>Panel Admin</span>
-                  </h1>
-                  <p class="subtitle">
-                    Consulta en tiempo real los registros de empleados para las opciones
-                    de pasadía y fiesta nocturna.
-                  </p>
+// Usa los mismos datos de Supabase que en app.js
+const SUPABASE_URL = "https://fuscxqlmxehwwozxlirz.supabase.co";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1c2N4cWxteGVod3dvenhsaXJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMxMzY0MzAsImV4cCI6MjA3ODcxMjQzMH0.TwN3JSYh96ItCbjk8fcPOoktUnfBonNmK0xxgVYCIio";
 
-                  <div class="highlight-box">
-                    <div class="highlight-icon">🛠️</div>
-                    <div class="highlight-text">
-                      <h2>Uso interno</h2>
-                      <p>Panel exclusivo para el área de Sistemas y Talento Humano.</p>
-                    </div>
-                  </div>
+const supabaseAdmin = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
 
-                  <ul class="info-list">
-                    <li>✔ Visualización de registros ordenados por fecha.</li>
-                    <li>✔ Buscador por nombre, apellido o documento.</li>
-                    <li>✔ Exportar registros a Excel (CSV).</li>
-                  </ul>
-                </div>
+// Contraseña del panel admin
+const ADMIN_PASSWORD = "Club2025*";
 
-                <div class="floating-lights">
-                  <span class="light light-1"></span>
-                  <span class="light light-2"></span>
-                  <span class="light light-3"></span>
-                </div>
-              </section>
+// Elementos de login
+const adminLogin = document.getElementById("adminLogin");
+const adminContent = document.getElementById("adminContent");
+const adminPasswordInput = document.getElementById("adminPassword");
+const adminLoginBtn = document.getElementById("adminLoginBtn");
+const adminLoginMsg = document.getElementById("adminLoginMsg");
 
-              <!-- Panel admin con login + contenido -->
-              <section class="panel panel-right">
-                <!-- BLOQUE LOGIN -->
-                <div class="admin-login" id="adminLogin">
-                  <h2>Acceso restringido</h2>
-                  <p>Ingresa la contraseña de administración para continuar.</p>
+// Elementos del panel
+const searchInput = document.getElementById("search");
+const tableBody = document.getElementById("adminTableBody");
+const adminSummary = document.getElementById("adminSummary");
+const adminEmpty = document.getElementById("adminEmpty");
+const downloadBtn = document.getElementById("downloadBtn");
 
-                  <div class="field">
-                    <label for="adminPassword">Contraseña</label>
-                    <input
-                      type="password"
-                      id="adminPassword"
-                      placeholder="********"
-                      autocomplete="off"
-                    />
-                  </div>
+let allRecords = [];
+let currentRecords = [];
 
-                  <button type="button" class="btn-primary" id="adminLoginBtn">
-                    Ingresar
-                  </button>
+/* --------------------------- UTILIDADES --------------------------- */
 
-                  <div class="admin-login-msg" id="adminLoginMsg"></div>
+function formatDate(isoString) {
+  const d = new Date(isoString);
+  if (Number.isNaN(d.getTime())) return "-";
+  return d.toLocaleString("es-CO", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
-                  <p class="admin-login-note">
-                    Uso exclusivo de personal autorizado de Talento Humano y Sistemas.
-                  </p>
-                </div>
+function renderTable(records) {
+  if (!tableBody || !adminEmpty) return;
 
-                <!-- BLOQUE CONTENIDO ADMIN (OCULTO INICIALMENTE) -->
-                <div id="adminContent" style="display:none; margin-top:4px;">
-                  <header class="form-header">
-                    <div class="form-title-group">
-                      <h2>Registros de empleados</h2>
-                      <p>Consulta general del evento de fin de año.</p>
-                    </div>
-                    <a href="index.html" class="admin-link">Volver al formulario</a>
-                  </header>
+  tableBody.innerHTML = "";
 
-                  <section class="admin-controls">
-                    <div class="field">
-                      <label for="search">Buscar por nombres, apellidos o documento</label>
-                      <input
-                        type="text"
-                        id="search"
-                        placeholder="Ej: Juan, Pérez, 123..."
-                        autocomplete="off"
-                      />
-                    </div>
-                    <div class="admin-controls-right">
-                      <div class="admin-summary" id="adminSummary">
-                        Cargando resumen...
-                      </div>
-                      <button type="button" class="btn-secondary" id="downloadBtn">
-                        Descargar Excel
-                      </button>
-                    </div>
-                  </section>
+  if (!records.length) {
+    adminEmpty.style.display = "block";
+    return;
+  }
 
-                  <section class="admin-table-wrapper">
-                    <table class="admin-table">
-                      <thead>
-                        <tr>
-                          <th>Fecha</th>
-                          <th>Nombres</th>
-                          <th>Apellidos</th>
-                          <th>Documento</th>
-                          <th>Opción</th>
-                        </tr>
-                      </thead>
-                      <tbody id="adminTableBody">
-                        <!-- Filas generadas por JS -->
-                      </tbody>
-                    </table>
-                    <div class="admin-empty" id="adminEmpty" style="display:none;">
-                      No se encontraron registros con el filtro actual.
-                    </div>
-                  </section>
+  adminEmpty.style.display = "none";
 
-                  <footer class="mini-footer">
-                    <span>Panel de consulta · Sistemas – Club Campestre de Pereira</span>
-                  </footer>
-                </div>
-              </section>
-            </main>
+  records.forEach((row) => {
+    const tr = document.createElement("tr");
 
-            <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-            <script src="js/admin.js"></script>
-          </body>
-        </html>
+    const tdFecha = document.createElement("td");
+    tdFecha.textContent = formatDate(row.created_at);
+
+    const tdNom = document.createElement("td");
+    tdNom.textContent = row.nombres || "";
+
+    const tdApe = document.createElement("td");
+    tdApe.textContent = row.apellidos || "";
+
+    const tdDoc = document.createElement("td");
+    tdDoc.textContent = row.documento || "";
+
+    const tdOpt = document.createElement("td");
+    tdOpt.textContent = row.opcion || "";
+    tdOpt.classList.add("opt-cell");
+
+    const optLower = (row.opcion || "").toLowerCase();
+    if (optLower.includes("pasadia")) {
+      tdOpt.classList.add("opt-day");
+    } else if (optLower.includes("fiesta")) {
+      tdOpt.classList.add("opt-night");
+    }
+
+    tr.appendChild(tdFecha);
+    tr.appendChild(tdNom);
+    tr.appendChild(tdApe);
+    tr.appendChild(tdDoc);
+    tr.appendChild(tdOpt);
+
+    tableBody.appendChild(tr);
+  });
+}
+
+function renderSummary(records) {
+  if (!adminSummary) return;
+
+  const total = records.length;
+  const pasadia = records.filter((r) =>
+    (r.opcion || "").toLowerCase().includes("pasadia")
+  ).length;
+  const fiesta = records.filter((r) =>
+    (r.opcion || "").toLowerCase().includes("fiesta")
+  ).length;
+
+  adminSummary.textContent = `Total registros: ${total} · Pasadía: ${pasadia} · Fiesta nocturna: ${fiesta}`;
+}
+
+function applyFilter() {
+  if (!allRecords.length) {
+    renderTable([]);
+    renderSummary([]);
+    return;
+  }
+
+  const term = (searchInput?.value || "").trim().toLowerCase();
+
+  if (!term) {
+    currentRecords = allRecords.slice();
+  } else {
+    currentRecords = allRecords.filter((row) => {
+      const nom = (row.nombres || "").toLowerCase();
+      const ape = (row.apellidos || "").toLowerCase();
+      const doc = (row.documento || "").toLowerCase();
+      return nom.includes(term) || ape.includes(term) || doc.includes(term);
+    });
+  }
+
+  renderTable(currentRecords);
+  renderSummary(currentRecords);
+}
+
+async function loadData() {
+  if (adminSummary) {
+    adminSummary.textContent = "Cargando registros...";
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from("fin_anio_empleados")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error cargando registros:", error);
+    if (adminSummary) {
+      adminSummary.textContent =
+        "Error cargando registros. Revisa consola o credenciales.";
+    }
+    renderTable([]);
+    return;
+  }
+
+  allRecords = data || [];
+  currentRecords = allRecords.slice();
+  renderTable(currentRecords);
+  renderSummary(currentRecords);
+}
+
+// Exportar a CSV (Excel lo abre perfecto)
+function exportToCsv() {
+  const records = currentRecords.length ? currentRecords : allRecords;
+
+  if (!records.length) {
+    alert("No hay registros para exportar.");
+    return;
+  }
+
+  const header = ["Fecha", "Nombres", "Apellidos", "Documento", "Opción"];
+  const rows = records.map((r) => [
+    formatDate(r.created_at),
+    (r.nombres || "").replace(/"/g, '""'),
+    (r.apellidos || "").replace(/"/g, '""'),
+    (r.documento || "").replace(/"/g, '""'),
+    (r.opcion || "").replace(/"/g, '""'),
+  ]);
+
+  const csvLines = [
+    header.join(";"),
+    ...rows.map((cols) => cols.map((c) => `"${c}"`).join(";")),
+  ];
+
+  const csvContent = csvLines.join("\r\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "registros_fin_de_ano_empleados.csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* --------------------------- LOGIN --------------------------- */
+
+function doLogin() {
+  if (!adminPasswordInput || !adminLogin || !adminContent || !adminLoginMsg) {
+    console.error("Elementos del login no encontrados en el DOM.");
+    return;
+  }
+
+  const pass = (adminPasswordInput.value || "").trim();
+  adminLoginMsg.textContent = "";
+
+  if (!pass) {
+    adminLoginMsg.textContent = "Por favor ingresa la contraseña.";
+    adminLoginMsg.style.color = "#fecaca";
+    return;
+  }
+
+  if (pass !== ADMIN_PASSWORD) {
+    adminLoginMsg.textContent = "Contraseña incorrecta.";
+    adminLoginMsg.style.color = "#fecaca";
+    return;
+  }
+
+  // LOGIN CORRECTO: ocultar login, mostrar contenido y cargar datos
+  adminLogin.style.display = "none";
+  adminContent.style.display = "block";
+
+  loadData();
+}
+
+/* ------------------------ ASIGNAR EVENTOS ------------------------ */
+
+// Estos se ejecutan una vez cargado el script (está al final del <body>)
+
+if (adminLoginBtn) {
+  adminLoginBtn.addEventListener("click", doLogin);
+} else {
+  console.error("No se encontró el botón de login (adminLoginBtn).");
+}
+
+if (adminPasswordInput) {
+  adminPasswordInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      doLogin();
+    }
+  });
+}
+
+if (searchInput) {
+  searchInput.addEventListener("input", applyFilter);
+}
+
+if (downloadBtn) {
+  downloadBtn.addEventListener("click", exportToCsv);
+}

@@ -175,6 +175,13 @@ form.addEventListener("submit", async (event) => {
       "success",
       "🎉 ¡Registro exitoso! Tu elección ha quedado guardada correctamente."
     );
+
+    // Refrescar visualmente el formulario
+    form.reset();
+    document
+      .querySelectorAll(".option-card.selected")
+      .forEach((c) => c.classList.remove("selected"));
+
     setFormDisabled(true);
     openSuccessModal(nombreCompleto, opcion);
   } catch (err) {
