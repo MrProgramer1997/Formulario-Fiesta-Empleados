@@ -1,8 +1,9 @@
 // js/app.js
 
-// 1. Configuración de Supabase
-const SUPABASE_URL = "https://fuscxqlmxehwwozxlirz.supabase.co"; // <-- CAMBIA ESTO
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1c2N4cWxteGVod3dvenhsaXJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMxMzY0MzAsImV4cCI6MjA3ODcxMjQzMH0.TwN3JSYh96ItCbjk8fcPOoktUnfBonNmK0xxgVYCIio";               // <-- CAMBIA ESTO
+// 1. Configuración de Supabase (TU PROYECTO)
+const SUPABASE_URL = "https://fuscxqlmxehwwozxlirz.supabase.co";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1c2N4cWxteGVod3dvenhsaXJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMxMzY0MzAsImV4cCI6MjA3ODcxMjQzMH0.TwN3JSYh96ItCbjk8fcPOoktUnfBonNmK0xxgVYCIio";
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
@@ -20,13 +21,6 @@ const successModal = document.getElementById("successModal");
 const modalNameEl = document.getElementById("modalName");
 const modalOptionEl = document.getElementById("modalOption");
 const modalCloseBtn = document.getElementById("modalCloseBtn");
-
-// Countdown elementos
-const cdDaysEl = document.getElementById("cd-days");
-const cdHoursEl = document.getElementById("cd-hours");
-const cdMinutesEl = document.getElementById("cd-minutes");
-const cdSecondsEl = document.getElementById("cd-seconds");
-const cdNoteEl = document.getElementById("cd-note");
 
 const STORAGE_KEY = "finAnioEmpleadoRegistrado_v1";
 
@@ -109,10 +103,16 @@ form.addEventListener("submit", async (event) => {
 
   const nombres = form.nombres.value.trim();
   const apellidos = form.apellidos.value.trim();
+  const documento = form.documento.value.trim();
   const opcionRadio = form.querySelector('input[name="opcion"]:checked');
 
   if (!nombres || !apellidos) {
     showMessage("error", "Por favor completa tus nombres y apellidos.");
+    return;
+  }
+
+  if (!documento) {
+    showMessage("error", "Por favor ingresa tu número de documento.");
     return;
   }
 
@@ -136,17 +136,20 @@ form.addEventListener("submit", async (event) => {
   showMessage("success", "Enviando tu registro...");
 
   try {
-    const { data, error } = await supabaseClient
+    const { error } = await supabaseClient
       .from("fin_anio_empleados")
-      .insert({
-        nombres,
-        apellidos,
-        opcion,
-      })
-      .select()
-      .single();
+      .insert([
+        {
+          nombres,
+          apellidos,
+          documento,
+          opcion,
+        },
+      ]);
 
     if (error) {
+      console.error("Error Supabase:", error);
+
       // Error por registro duplicado (índice único)
       if (error.code === "23505") {
         showMessage(
@@ -154,12 +157,12 @@ form.addEventListener("submit", async (event) => {
           "Ya te encuentras registrado para este evento. No es necesario realizar otro registro."
         );
       } else {
-        console.error("Error Supabase:", error);
         showMessage(
           "error",
           "Ocurrió un error al registrar tu elección. Intenta nuevamente o comunícate con sistemas."
         );
       }
+
       setFormDisabled(false);
       return;
     }
@@ -167,9 +170,10 @@ form.addEventListener("submit", async (event) => {
     // Éxito
     markRegisteredLocal();
     const nombreCompleto = `${nombres} ${apellidos}`;
+
     showMessage(
       "success",
-      "¡Registro exitoso! Tu elección ha quedado guardada correctamente."
+      "🎉 ¡Registro exitoso! Tu elección ha quedado guardada correctamente."
     );
     setFormDisabled(true);
     openSuccessModal(nombreCompleto, opcion);
@@ -183,45 +187,7 @@ form.addEventListener("submit", async (event) => {
   }
 });
 
-// 7. Countdown
-function startCountdown() {
-  // Cambia esta fecha a la fecha/hora real del evento
-  const EVENT_DATE = new Date("2025-12-14T19:00:00-05:00"); // Domingo 7:00 p.m.
-
-  function updateCountdown() {
-    const now = new Date();
-    const diff = EVENT_DATE - now;
-
-    if (!cdDaysEl || !cdHoursEl || !cdMinutesEl || !cdSecondsEl) return;
-
-    if (diff <= 0) {
-      cdDaysEl.textContent = "00";
-      cdHoursEl.textContent = "00";
-      cdMinutesEl.textContent = "00";
-      cdSecondsEl.textContent = "00";
-      if (cdNoteEl) {
-        cdNoteEl.textContent = "El evento está en curso o ya finalizó.";
-      }
-      return;
-    }
-
-    const totalSeconds = Math.floor(diff / 1000);
-    const days = Math.floor(totalSeconds / (3600 * 24));
-    const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-
-    cdDaysEl.textContent = String(days).padStart(2, "0");
-    cdHoursEl.textContent = String(hours).padStart(2, "0");
-    cdMinutesEl.textContent = String(minutes).padStart(2, "0");
-    cdSecondsEl.textContent = String(seconds).padStart(2, "0");
-  }
-
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
-}
-
-// 8. Listeners del modal y carga inicial
+// 7. Listeners del modal y carga inicial
 document.addEventListener("DOMContentLoaded", () => {
   // Ya registrado en este navegador
   if (checkAlreadyRegisteredLocal()) {
@@ -231,49 +197,6 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     setFormDisabled(true);
   }
-
-  // Iniciar countdown
-  // 7. Countdown
-function startCountdown() {
-  // FECHA REAL DEL EVENTO
-  // Domingo 14 de diciembre de 2025, 7:00 p.m. (hora Colombia, -05:00)
-  const EVENT_DATE = new Date("2025-12-14T19:00:00-05:00");
-
-  function updateCountdown() {
-    const now = new Date();
-    const diff = EVENT_DATE - now;
-
-    if (!cdDaysEl || !cdHoursEl || !cdMinutesEl || !cdSecondsEl) return;
-
-    if (diff <= 0) {
-      cdDaysEl.textContent = "00";
-      cdHoursEl.textContent = "00";
-      cdMinutesEl.textContent = "00";
-      cdSecondsEl.textContent = "00";
-      if (cdNoteEl) {
-        cdNoteEl.textContent = "El evento está en curso o ya finalizó.";
-      }
-      return;
-    }
-
-    const totalSeconds = Math.floor(diff / 1000);
-    const days = Math.floor(totalSeconds / (3600 * 24));
-    const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-
-    cdDaysEl.textContent = String(days).padStart(2, "0");
-    cdHoursEl.textContent = String(hours).padStart(2, "0");
-    cdMinutesEl.textContent = String(minutes).padStart(2, "0");
-    cdSecondsEl.textContent = String(seconds).padStart(2, "0");
-  }
-
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
-}
-
-}
-
 
   // Cierre del modal
   if (modalCloseBtn) {
