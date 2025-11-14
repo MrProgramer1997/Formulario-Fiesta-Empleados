@@ -186,7 +186,7 @@ form.addEventListener("submit", async (event) => {
 // 7. Countdown
 function startCountdown() {
   // Cambia esta fecha a la fecha/hora real del evento
-  const EVENT_DATE = new Date("2024-12-15T19:00:00-05:00"); // Domingo 7:00 p.m.
+  const EVENT_DATE = new Date("2025-12-14T19:00:00-05:00"); // Domingo 7:00 p.m.
 
   function updateCountdown() {
     const now = new Date();

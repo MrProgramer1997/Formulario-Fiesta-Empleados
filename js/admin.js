@@ -65,6 +65,9 @@ function renderTable(records) {
     const tdApe = document.createElement("td");
     tdApe.textContent = row.apellidos || "";
 
+    const tdDoc = document.createElement("td");
+    tdDoc.textContent = row.documento || "";
+
     const tdOpt = document.createElement("td");
     tdOpt.textContent = row.opcion || "";
     tdOpt.classList.add("opt-cell");
@@ -79,6 +82,7 @@ function renderTable(records) {
     tr.appendChild(tdFecha);
     tr.appendChild(tdNom);
     tr.appendChild(tdApe);
+    tr.appendChild(tdDoc);
     tr.appendChild(tdOpt);
 
     tableBody.appendChild(tr);
@@ -112,7 +116,8 @@ function applyFilter() {
     currentRecords = allRecords.filter((row) => {
       const nom = (row.nombres || "").toLowerCase();
       const ape = (row.apellidos || "").toLowerCase();
-      return nom.includes(term) || ape.includes(term);
+      const doc = (row.documento || "").toLowerCase();
+      return nom.includes(term) || ape.includes(term) || doc.includes(term);
     });
   }
 
@@ -151,11 +156,12 @@ function exportToCsv() {
     return;
   }
 
-  const header = ["Fecha", "Nombres", "Apellidos", "Opción"];
+  const header = ["Fecha", "Nombres", "Apellidos", "Documento", "Opción"];
   const rows = records.map((r) => [
     formatDate(r.created_at),
     (r.nombres || "").replace(/"/g, '""'),
     (r.apellidos || "").replace(/"/g, '""'),
+    (r.documento || "").replace(/"/g, '""'),
     (r.opcion || "").replace(/"/g, '""'),
   ]);
 

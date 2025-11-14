@@ -38,7 +38,7 @@
 
         <ul class="info-list">
           <li>✔ Visualización de registros ordenados por fecha.</li>
-          <li>✔ Buscador por nombre o apellido.</li>
+          <li>✔ Buscador por nombre, apellido o documento.</li>
           <li>✔ Exportar registros a Excel (CSV).</li>
         </ul>
       </div>
@@ -90,11 +90,11 @@
 
         <section class="admin-controls">
           <div class="field">
-            <label for="search">Buscar por nombres o apellidos</label>
+            <label for="search">Buscar por nombres, apellidos o documento</label>
             <input
               type="text"
               id="search"
-              placeholder="Ej: Juan, Pérez, etc."
+              placeholder="Ej: Juan, Pérez, 123..."
               autocomplete="off"
             />
           </div>
@@ -115,6 +115,7 @@
                 <th>Fecha</th>
                 <th>Nombres</th>
                 <th>Apellidos</th>
+                <th>Documento</th>
                 <th>Opción</th>
               </tr>
             </thead>
