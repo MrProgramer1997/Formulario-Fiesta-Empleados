@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin – Fin de Año Empleados</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="bg-layer bg-layer-1"></div>
+  <div class="bg-layer bg-layer-2"></div>
+  <div class="bg-stars"></div>
+
+  <main class="page">
+    <!-- Panel info -->
+    <section class="panel panel-left">
+      <div>
+        <div class="badge">Panel · Administración</div>
+        <h1 class="title">
+          Fin de Año<br/>
+          <span>Panel Admin</span>
+        </h1>
+        <p class="subtitle">
+          Consulta en tiempo real los registros de empleados para las opciones
+          de pasadía y fiesta nocturna.
+        </p>
+
+        <div class="highlight-box">
+          <div class="highlight-icon">🛠️</div>
+          <div class="highlight-text">
+            <h2>Uso interno</h2>
+            <p>Panel exclusivo para el área de Sistemas y Talento Humano.</p>
+          </div>
+        </div>
+
+        <ul class="info-list">
+          <li>✔ Visualización de registros ordenados por fecha.</li>
+          <li>✔ Buscador por nombre o apellido.</li>
+          <li>✔ Identificación rápida de la opción seleccionada.</li>
+        </ul>
+      </div>
+
+      <div class="floating-lights">
+        <span class="light light-1"></span>
+        <span class="light light-2"></span>
+        <span class="light light-3"></span>
+      </div>
+    </section>
+
+    <!-- Panel admin lista -->
+    <section class="panel panel-right">
+      <header class="form-header">
+        <div class="form-title-group">
+          <h2>Registros de empleados</h2>
+          <p>Consulta general del evento de fin de año.</p>
+        </div>
+        <a href="index.html" class="admin-link">Volver al formulario</a>
+      </header>
+
+      <section class="admin-controls">
+        <div class="field">
+          <label for="search">Buscar por nombres o apellidos</label>
+          <input
+            type="text"
+            id="search"
+            placeholder="Ej: Juan, Pérez, etc."
+            autocomplete="off"
+          />
+        </div>
+        <div class="admin-summary" id="adminSummary">
+          Cargando resumen...
+        </div>
+      </section>
+
+      <section class="admin-table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Nombres</th>
+              <th>Apellidos</th>
+              <th>Opción</th>
+            </tr>
+          </thead>
+          <tbody id="adminTableBody">
+            <!-- Filas generadas por JS -->
+          </tbody>
+        </table>
+        <div class="admin-empty" id="adminEmpty" style="display:none;">
+          No se encontraron registros con el filtro actual.
+        </div>
+      </section>
+
+      <footer class="mini-footer">
+        <span>Panel de consulta · Sistemas – Club Campestre de Pereira</span>
+      </footer>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
