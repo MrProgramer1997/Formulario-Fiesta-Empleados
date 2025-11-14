@@ -1,8 +1,8 @@
 // js/app.js
 
 // 1. Configuración de Supabase
-const SUPABASE_URL = "https://TU-PROYECTO.supabase.co"; // <-- CAMBIA ESTO
-const SUPABASE_ANON_KEY = "TU-LLAVE-ANON";               // <-- CAMBIA ESTO
+const SUPABASE_URL = "https://fuscxqlmxehwwozxlirz.supabase.co"; // <-- CAMBIA ESTO
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1c2N4cWxteGVod3dvenhsaXJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMxMzY0MzAsImV4cCI6MjA3ODcxMjQzMH0.TwN3JSYh96ItCbjk8fcPOoktUnfBonNmK0xxgVYCIio";               // <-- CAMBIA ESTO
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
