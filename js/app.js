@@ -233,7 +233,47 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Iniciar countdown
-  startCountdown();
+  // 7. Countdown
+function startCountdown() {
+  // FECHA REAL DEL EVENTO
+  // Domingo 14 de diciembre de 2025, 7:00 p.m. (hora Colombia, -05:00)
+  const EVENT_DATE = new Date("2025-12-14T19:00:00-05:00");
+
+  function updateCountdown() {
+    const now = new Date();
+    const diff = EVENT_DATE - now;
+
+    if (!cdDaysEl || !cdHoursEl || !cdMinutesEl || !cdSecondsEl) return;
+
+    if (diff <= 0) {
+      cdDaysEl.textContent = "00";
+      cdHoursEl.textContent = "00";
+      cdMinutesEl.textContent = "00";
+      cdSecondsEl.textContent = "00";
+      if (cdNoteEl) {
+        cdNoteEl.textContent = "El evento está en curso o ya finalizó.";
+      }
+      return;
+    }
+
+    const totalSeconds = Math.floor(diff / 1000);
+    const days = Math.floor(totalSeconds / (3600 * 24));
+    const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    cdDaysEl.textContent = String(days).padStart(2, "0");
+    cdHoursEl.textContent = String(hours).padStart(2, "0");
+    cdMinutesEl.textContent = String(minutes).padStart(2, "0");
+    cdSecondsEl.textContent = String(seconds).padStart(2, "0");
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+}
+
+}
+
 
   // Cierre del modal
   if (modalCloseBtn) {

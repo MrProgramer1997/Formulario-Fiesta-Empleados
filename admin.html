@@ -39,7 +39,7 @@
         <ul class="info-list">
           <li>✔ Visualización de registros ordenados por fecha.</li>
           <li>✔ Buscador por nombre o apellido.</li>
-          <li>✔ Identificación rápida de la opción seleccionada.</li>
+          <li>✔ Exportar registros a Excel (CSV).</li>
         </ul>
       </div>
 
@@ -50,53 +50,87 @@
       </div>
     </section>
 
-    <!-- Panel admin lista -->
+    <!-- Panel admin con login + contenido -->
     <section class="panel panel-right">
-      <header class="form-header">
-        <div class="form-title-group">
-          <h2>Registros de empleados</h2>
-          <p>Consulta general del evento de fin de año.</p>
-        </div>
-        <a href="index.html" class="admin-link">Volver al formulario</a>
-      </header>
+      <!-- BLOQUE LOGIN -->
+      <div class="admin-login" id="adminLogin">
+        <h2>Acceso restringido</h2>
+        <p>Ingresa la contraseña de administración para continuar.</p>
 
-      <section class="admin-controls">
         <div class="field">
-          <label for="search">Buscar por nombres o apellidos</label>
+          <label for="adminPassword">Contraseña</label>
           <input
-            type="text"
-            id="search"
-            placeholder="Ej: Juan, Pérez, etc."
+            type="password"
+            id="adminPassword"
+            placeholder="********"
             autocomplete="off"
           />
         </div>
-        <div class="admin-summary" id="adminSummary">
-          Cargando resumen...
-        </div>
-      </section>
 
-      <section class="admin-table-wrapper">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>Nombres</th>
-              <th>Apellidos</th>
-              <th>Opción</th>
-            </tr>
-          </thead>
-          <tbody id="adminTableBody">
-            <!-- Filas generadas por JS -->
-          </tbody>
-        </table>
-        <div class="admin-empty" id="adminEmpty" style="display:none;">
-          No se encontraron registros con el filtro actual.
-        </div>
-      </section>
+        <button type="button" class="btn-primary" id="adminLoginBtn">
+          Ingresar
+        </button>
 
-      <footer class="mini-footer">
-        <span>Panel de consulta · Sistemas – Club Campestre de Pereira</span>
-      </footer>
+        <div class="admin-login-msg" id="adminLoginMsg"></div>
+
+        <p class="admin-login-note">
+          Uso exclusivo de personal autorizado de Talento Humano y Sistemas.
+        </p>
+      </div>
+
+      <!-- BLOQUE CONTENIDO ADMIN (OCULTO INICIALMENTE) -->
+      <div id="adminContent" style="display:none; margin-top:4px;">
+        <header class="form-header">
+          <div class="form-title-group">
+            <h2>Registros de empleados</h2>
+            <p>Consulta general del evento de fin de año.</p>
+          </div>
+          <a href="index.html" class="admin-link">Volver al formulario</a>
+        </header>
+
+        <section class="admin-controls">
+          <div class="field">
+            <label for="search">Buscar por nombres o apellidos</label>
+            <input
+              type="text"
+              id="search"
+              placeholder="Ej: Juan, Pérez, etc."
+              autocomplete="off"
+            />
+          </div>
+          <div class="admin-controls-right">
+            <div class="admin-summary" id="adminSummary">
+              Cargando resumen...
+            </div>
+            <button type="button" class="btn-secondary" id="downloadBtn">
+              Descargar Excel
+            </button>
+          </div>
+        </section>
+
+        <section class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Nombres</th>
+                <th>Apellidos</th>
+                <th>Opción</th>
+              </tr>
+            </thead>
+            <tbody id="adminTableBody">
+              <!-- Filas generadas por JS -->
+            </tbody>
+          </table>
+          <div class="admin-empty" id="adminEmpty" style="display:none;">
+            No se encontraron registros con el filtro actual.
+          </div>
+        </section>
+
+        <footer class="mini-footer">
+          <span>Panel de consulta · Sistemas – Club Campestre de Pereira</span>
+        </footer>
+      </div>
     </section>
   </main>
 
