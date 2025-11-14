@@ -1,8 +1,8 @@
 // js/admin.js
 
 // Usa los mismos datos de Supabase que en app.js
-const SUPABASE_URL = "https://TU-PROYECTO.supabase.co"; // <-- MISMO QUE app.js
-const SUPABASE_ANON_KEY = "TU-LLAVE-ANON";               // <-- MISMO QUE app.js
+const SUPABASE_URL = "https://fuscxqlmxehwwozxlirz.supabase.co"; // <-- MISMO QUE app.js
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1c2N4cWxteGVod3dvenhsaXJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMxMzY0MzAsImV4cCI6MjA3ODcxMjQzMH0.TwN3JSYh96ItCbjk8fcPOoktUnfBonNmK0xxgVYCIio";               // <-- MISMO QUE app.js
 
 const supabaseAdmin = window.supabase.createClient(
   SUPABASE_URL,
